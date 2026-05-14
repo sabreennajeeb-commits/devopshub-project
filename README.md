@@ -1,0 +1,2 @@
+# DevOpsHub Feedback System
+This project is a containerized, two-application system designed to collect user feedback and track webpage interactions. The system utilizes a shared Redis database to persist message logs and increment page visit counts, allowing the startup to monitor user engagement in real-time.
