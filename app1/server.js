@@ -3,7 +3,7 @@ const { createClient } = require('redis');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-
+// Connect to the shared Redis container using Docker DNS
 const client = createClient({
     url: 'redis://redis:6379'
 });
@@ -28,7 +28,7 @@ app.get('/', async (req, res) => {
         </html>
     `);
 });
-
+// Push submitted messages to the Redis list.
 app.post('/submit', async (req, res) => {
     const message = req.body.message;
     await client.connect();
