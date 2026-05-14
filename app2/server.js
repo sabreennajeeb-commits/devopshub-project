@@ -11,10 +11,11 @@ client.on('error', (err) => console.log('Redis Client Error', err));
 
 app.get('/', async (req, res) => {
     await client.connect();
+    // Fetch the current page visits and message count from Redis
     const visits = await client.get('page_visits') || 0;
     const messageCount = await client.lLen('messages_list') || 0;
     await client.disconnect();
-    
+    // Render the simple HTML dashboard
     res.send(`
         <html>
             <body style="font-family: sans-serif; padding: 2rem; background-color: #f4f4f9;">
