@@ -1,0 +1,42 @@
+const express = require('express');
+const { createClient } = require('redis');
+
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+
+const client = createClient({
+    url: 'redis://redis:6379'
+});
+
+client.on('error', (err) => console.log('Redis Client Error', err));
+
+app.get('/', async (req, res) => {
+    await client.connect();
+    await client.incr('page_visits');
+    await client.disconnect();
+    
+    res.send(`
+        <html>
+            <body style="font-family: sans-serif; padding: 2rem;">
+                <h2>DevOpsHub Feedback Form</h2>
+                <form action="/submit" method="POST">
+                    <textarea name="message" required placeholder="Enter your feedback here..." rows="4" cols="50"></textarea>
+                    <br><br>
+                    <button type="submit">Submit Message</button>
+                </form>
+            </body>
+        </html>
+    `);
+});
+
+app.post('/submit', async (req, res) => {
+    const message = req.body.message;
+    await client.connect();
+    await client.lPush('messages_list', message);
+    await client.disconnect();
+    res.redirect('/');
+});
+
+app.listen(3000, () => {
+    console.log('App 1 running on port 3000');
+});
